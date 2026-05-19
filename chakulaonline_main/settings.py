@@ -40,7 +40,9 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
 
     # Add custom apps here, for example "accounts"
-'accounts'
+'accounts',
+'vendor',
+
 ]
 
 MIDDLEWARE = [

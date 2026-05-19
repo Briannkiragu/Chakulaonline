@@ -39,10 +39,10 @@ class UserManager(BaseUserManager):
        return user
 
 class User(AbstractBaseUser):
-    RESTAURANT=1
+    VENDOR=1
     CUSTOMER=2
     ROLE_CHOICE=(
-        (RESTAURANT,'Restaurant'),
+        (VENDOR,'Vendor'),
         (CUSTOMER,'Customer')
     )
     first_name=models.CharField(max_length=50)
@@ -74,6 +74,23 @@ class User(AbstractBaseUser):
     
     def has_module_perms(self,add_label):
          return True
+    def get_role(self):
+        if self.role == 1:
+            user_role = 'Vendor'
+        elif self.role == 2:
+            user_role = 'Customer'
+            return user_role     
+
+class Vendor(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    vendor_name = models.CharField(max_length=100)
+    vendor_license = models.ImageField(upload_to='vendor/license', blank=True, null=True)
+    is_approved = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    modified_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.vendor_name
 
 class UserProfile(models.Model):
     user=models.OneToOneField(User,on_delete=models.CASCADE,blank=True,null=True)
