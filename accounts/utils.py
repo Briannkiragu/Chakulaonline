@@ -45,3 +45,9 @@ def send_password_reset_email(request, user):
     email = EmailMessage(mail_subject, message, from_email, to=[to_email])
     email.send()
 
+def send_notification(mail_subject, mail_template, context):
+    from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', settings.EMAIL_HOST_USER)
+    message = render_to_string(mail_template, context)
+    to_email = context['user'].email
+    email = EmailMessage(mail_subject, message, from_email, to=[to_email])
+    email.send()

@@ -8,6 +8,7 @@ from .utils import detectUser, send_verification_email
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.exceptions import PermissionDenied
 from django.utils.http import urlsafe_base64_decode
+from vendor.models import vendor
 
 # Create your models here.
 
@@ -176,6 +177,7 @@ def custDashboard(request):
 @login_required(login_url='login')
 @user_passes_test(check_role_vendor)
 def vendorDashboard(request):
+
     return render(request, 'accounts/vendorDashboard.html')
 
 # forgot password
