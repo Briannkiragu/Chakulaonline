@@ -4,11 +4,12 @@ from .forms import UserForm
 from .models import User, UserProfile
 from django.contrib import messages, auth
 from django.contrib.auth import authenticate
+from django.contrib.auth.tokens import default_token_generator
 from .utils import detectUser, send_verification_email
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.exceptions import PermissionDenied
 from django.utils.http import urlsafe_base64_decode
-from vendor.models import vendor
+from vendor.models import Vendor
 
 # Create your models here.
 
@@ -90,15 +91,16 @@ def registerVendor(request):
             user_profile = UserProfile.objects.get(user=user)
             vendor.userProfile = user_profile
             vendor.save()
-            messages.success(request, 'Vendor registered successfully.')
-            return redirect('registerVendor')
 
-#send verification email here
-            mail_subject = 'Please activate your account'
-            email_template = 'accounts/emails/account_verification_email.html'
-            send_verification_email(request, user, mail_subject, email_template)
+            # send verification email here
+            try:
+                mail_subject = 'Please activate your account'
+                email_template = 'accounts/emails/account_verification_email.html'
+                send_verification_email(request, user, mail_subject, email_template)
+                messages.success(request, 'Vendor registered successfully.')
+            except Exception as e:
+                messages.warning(request, f'Vendor registered, but verification email could not be sent: {e}')
 
-            messages.success(request, 'Vendor registered successfully.')
             return redirect('registerVendor')
         else:
             # Re-render with bound forms so you can see validation errors

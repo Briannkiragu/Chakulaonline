@@ -15,20 +15,27 @@ class Vendor(models.Model):
         return self.vendor_name
 
     def save(self, *args, **kwargs):
+        origin = None
         if self.pk is not None:
             origin = Vendor.objects.get(pk=self.pk)
-        if origin.is_approved != self.is_approved:
-            if self.is_approved == True:
-                #send email to vendor that account is approved
+
+        if (
+            origin is not None
+            and hasattr(origin, 'is_approved')
+            and hasattr(self, 'is_approved')
+            and origin.is_approved != self.is_approved
+        ):
+            if self.is_approved is True:
+                # send email to vendor that account is approved
                 mail_subject = 'Congratulations! Your account has been approved.'
                 mail_template = 'accounts/emails/vendor_approved_email.html'
                 context = {'user': self.user, 'is_approved': self.is_approved}
                 send_notification(mail_subject, mail_template, context)
             else:
-                #send email to vendor that account is rejected
+                # send email to vendor that account is rejected
                 mail_subject = 'Sorry! Your account has been rejected.'
                 mail_template = 'accounts/emails/vendor_rejected_email.html'
                 context = {'user': self.user, 'is_approved': self.is_approved}
                 send_notification(mail_subject, mail_template, context)
-            #update vendor status
-        super(Vendor, self).save(*args, **kwargs)   
+
+        super(Vendor, self).save(*args, **kwargs)

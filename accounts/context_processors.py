@@ -1,5 +1,5 @@
 
-from vendor.models import vendor
+from vendor.models import Vendor
 
 def get_vendor(request):
     try:
