@@ -7,7 +7,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.tokens import default_token_generator
 from .utils import detectUser, send_verification_email
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied 
 from django.utils.http import urlsafe_base64_decode
 from vendor.models import Vendor
 
@@ -187,12 +187,16 @@ def vendorDashboard(request):
 def forgot_password(request):
     if request.method == 'POST':
         email = request.POST['email']
+
+  
         if User.objects.filter(email=email).exists():
             user = User.objects.get(email__exact=email)
+            
+                  #send reset pasword email 
             mail_subject = 'Reset your password'
             email_template = 'accounts/emails/reset_password_email.html'
             send_verification_email(request, user, mail_subject, email_template)
-            messages.success(request, 'Verification email has been sent to your email address.')
+            messages.success(request, 'Reset password email has been sent to your email address.')
             return redirect('login')
         else:
             messages.error(request, 'Account does not exist!')

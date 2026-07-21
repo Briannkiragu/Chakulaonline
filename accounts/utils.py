@@ -31,19 +31,7 @@ def send_verification_email(request, user, mail_subject, email_template):
     email.send()
 
 
-def send_password_reset_email(request, user):
-    from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', settings.EMAIL_HOST_USER)
-    current_site = get_current_site(request)
-    mail_subject = 'Reset your password'
-    message = render_to_string('accounts/emails/reset_password_email.html', {
-        'user': user,
-        'domain': current_site.domain,
-        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-        'token': default_token_generator.make_token(user),
-    })
-    to_email = user.email
-    email = EmailMessage(mail_subject, message, from_email, to=[to_email])
-    email.send()
+
 
 def send_notification(mail_subject, mail_template, context):
     from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', settings.EMAIL_HOST_USER)
