@@ -19,7 +19,6 @@ def detectUser(user):
 def send_verification_email(request, user, mail_subject, email_template):
     from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', settings.EMAIL_HOST_USER)
     current_site = get_current_site(request)
-    mail_subject = 'Please activate your account'
     message = render_to_string(email_template, {
         'user': user,
         'domain': current_site.domain,
@@ -31,7 +30,7 @@ def send_verification_email(request, user, mail_subject, email_template):
     email.send()
 
 
-
+ 
 
 def send_notification(mail_subject, mail_template, context):
     from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', settings.EMAIL_HOST_USER)

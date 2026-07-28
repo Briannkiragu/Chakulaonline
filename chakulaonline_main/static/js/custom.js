@@ -57,8 +57,22 @@ geocoder.geocode({'address': address}, function(results, status){
             //get country
             if(place_address_components[i].types[j] == 'country'){
                 $('#id_country').val(place.address_components[i].long_name);
-
             }
+           //get state
+            if(place_address_components[i].types[j] == 'administrative_area_level_1'){
+            $('#id_state').val(place.address_components[i].long_name);
+            }
+          //get city
+            if(place_address_components[i].types[j] == 'locality'){
+            $('#id_city').val(place.address_components[i].long_name);
+            }
+            //get pincode
+            if(place_address_components[i].types[j] == 'postalcode'){
+            $('#id_pin_code').val(place.address_components[i].long_name);
+            }else{
+                $('#id_pin_code').val('"');
+            }
+
         }
 
     }
