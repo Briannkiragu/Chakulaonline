@@ -80,7 +80,7 @@ class User(AbstractBaseUser):
             user_role = 'Vendor'
         elif self.role == 2:
             user_role = 'Customer'
-            return user_role     
+        return user_role
 
 class Vendor(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)

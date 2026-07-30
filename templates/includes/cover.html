@@ -1,9 +1,9 @@
 			
   {% load static %}
 
-            <div class="page-section restaurant-detail-image-section" style=" background: url({{ vendor.user_profile.cover_photo.url }}) no-repeat scroll 0 0 / cover;">
+            <div class="page-section restaurant-detail-image-section" style=" background: url({% if vendor.user_profile.cover_photo.url %} {{ vendor.user_profile.cover_photo.url }}{% else %} {% static 'images/default-cover.png' %} {% endif %}) no-repeat scroll 0 0 / cover;">
 				<!-- Container Start -->
-				<div class="container">
+	 			<div class="container">
 					<!-- Row Start -->
 					<div class="row">
 						<!-- Column Start -->
@@ -12,17 +12,23 @@
 							{% include 'includes/v_sidebar.html' %}
 							<div class="company-info-detail">
 								<div class="company-info">
-									<div class="img-holder">
+									<div class="img-holder"> 
 										<figure>
+											{% if vendor.user_profile.profile_picture %}
 											<img src="{{ vendor.user_profile.profile_picture.url }}" alt="">
+											{% else %}
+											<img src="{% static 'images/default-profile.png' %}" alt="">
+											{% endif %}	
 										</figure>
 									</div>
 
 									<div class="text-holder">
 										<span class="restaurant-title">{{ vendor.vendor_name }}</span>
 										<div class="text">
+											{% if vendor.user_profile_address %}
 											<i class="icon-location"></i>
 											<p>{{ vendor.user_profile.address }}</p>
+											{% end if %}
 										</div>
 									</div>
 								</div>

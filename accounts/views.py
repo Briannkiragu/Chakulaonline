@@ -91,10 +91,8 @@ def registerVendor(request):
             user_profile = UserProfile.objects.get(user=user)
             vendor.userProfile = user_profile
             vendor.save()
-            messages.success(request, 'Vendor registered successfully.')
-            return redirect('registerVendor')
 
-#send verification email here
+            #send verification email here
             mail_subject = 'Please activate your account'
             email_template = 'accounts/emails/account_verification_email.html'
             send_verification_email(request, user, mail_subject, email_template)
