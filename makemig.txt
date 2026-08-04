@@ -1,0 +1,4 @@
+﻿Migrations for 'vendor':
+  vendor\migrations\0002_vendor_is_approved_vendor_vendor_slug.py
+    + Add field is_approved to vendor
+    + Add field vendor_slug to vendor

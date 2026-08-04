@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.exceptions import PermissionDenied
 from django.utils.http import urlsafe_base64_decode
 from vendor.models import Vendor
-
+from django.template.defaultfilters import slugify
 # Create your models here.
 
 
@@ -21,8 +21,8 @@ def check_role_vendor(user):
         return True
     else:
         raise PermissionDenied
-    
-    #restrict vendor from acessing cust page
+
+#restrict vendor from acessing cust page
 def check_role_customer(user):
     if user.role == 2:
         return True
@@ -74,6 +74,8 @@ def registerUser(request):
 
 def registerVendor(request):
     if request.method == 'POST':
+        messages.warning(request, 'Ýou are already logged-in')
+        return redirect('myAccount')
         # Store the data and create the user
         form = UserForm(request.POST)
         v_form = VendorForm(request.POST, request.FILES)
@@ -88,6 +90,8 @@ def registerVendor(request):
             user.save()
             vendor = v_form.save(commit=False)
             vendor.user = user
+            vendor_name = v_form.cleaned_data['vendor_name']
+            vendor.vendor_slug = slugify(vendor_name)+ '-' + str(user.id)  # Ensure uniqueness by appending user ID
             user_profile = UserProfile.objects.get(user=user)
             vendor.userProfile = user_profile
             vendor.save()
@@ -162,6 +166,7 @@ def logout(request):
     return redirect('login')
 @login_required(login_url='login')
 def myAccount(request):
+    
     
    user = request.user
    redirectUrl = detectUser(user)

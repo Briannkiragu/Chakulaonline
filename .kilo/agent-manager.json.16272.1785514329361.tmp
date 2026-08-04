@@ -1,0 +1,17 @@
+{
+  "worktrees": {
+    "wt-1785514329360-1": {
+      "branch": "cottony-quotation",
+      "path": "c:\\Users\\hp\\Desktop\\Chakulaonline\\.kilo\\worktrees\\cottony-quotation",
+      "parentBranch": "main",
+      "createdAt": "2026-07-31T16:12:09.360Z",
+      "remote": "origin",
+      "branchOwned": true
+    }
+  },
+  "sessions": {},
+  "worktreeOrder": [
+    "wt-1785514329360-1"
+  ],
+  "sessionsCollapsed": true
+}
