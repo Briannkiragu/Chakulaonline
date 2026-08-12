@@ -67,15 +67,17 @@ def registerUser(request):
     else:
         form = UserForm()
 
-    context = {
+    context = { 
         'form': form,
     }
     return render(request, 'accounts/registerUser.html', context)
 
 def registerVendor(request):
-    if request.method == 'POST':
-        messages.warning(request, 'Ýou are already logged-in')
+    if request.user.is_authenticated:
+        messages.warning(request, 'You are already logged-in')
         return redirect('myAccount')
+
+    if request.method == 'POST':
         # Store the data and create the user
         form = UserForm(request.POST)
         v_form = VendorForm(request.POST, request.FILES)
@@ -146,18 +148,18 @@ def login(request):
         messages.warning(request, 'You are already logged in.')
         return redirect('myAccount')
     elif request.method == 'POST':
-        email = request.POST['email']
-        password = request.POST['password']
-        user = User.objects.filter(email=email).first()
-       
+        email = request.POST.get('email')
+        password = request.POST.get('password')
         user = authenticate(request, email=email, password=password)
         if user is not None:
             auth.login(request, user)
             messages.success(request, 'You are now logged in.')
             return redirect('myAccount')
+        if User.objects.filter(email__iexact=email, is_active=False).exists():
+            messages.error(request, 'Account is not activated yet. Please check your email.')
         else:
             messages.error(request, 'Invalid login credentials')
-            return redirect('login')
+        return redirect('login')
     return render(request, 'accounts/login.html')
 
 def logout(request):

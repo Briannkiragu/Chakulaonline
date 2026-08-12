@@ -1,11 +1,13 @@
+from django.http import JsonResponse, HttpResponse
+from django.db import IntegrityError
 from django.shortcuts import get_object_or_404, redirect, render
 
 from menu.forms import CategoryForm, ItemForm
-from .forms import VendorForm
+from .forms import VendorForm, OpeningHourForm
 from accounts.forms import UserProfileForm
 
 from accounts.models import UserProfile
-from .models import Vendor
+from .models import Vendor, OpeningHour
 from django.contrib import messages
 
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -81,7 +83,8 @@ def add_category(request):
             category_name = form.cleaned_data['category_name']
             category = form.save(commit=False)
             category.vendor = get_vendor(request)
-            category.slug = slugify(category_name)
+            category.save() #category id will be generated after saving the category
+            category.slug = slugify(category_name)+ '-' + str(category.id)  # Ensure uniqueness by appending category ID
             category.save()
             messages.success(request, 'Category added successfully!')
             return redirect('menu_builder')
@@ -149,7 +152,7 @@ def add_food(request):
     else:
         form = ItemForm()
         #modify this form
-        form.fields['category'].queryset = Category.objects.filter(vendor=get_vendor(request))
+        form.fields['category_name'].queryset = Category.objects.filter(vendor=get_vendor(request))
     context = {
         'form': form,
     }
@@ -174,7 +177,7 @@ def edit_food(request, pk=None):
             print(form.errors)
     else:
         form = ItemForm(instance=food)
-        form.fields['category'].queryset = Category.objects.filter(vendor=get_vendor(request))
+        form.fields['category_name'].queryset = Category.objects.filter(vendor=get_vendor(request))
 
     context = {
         'form': form,
@@ -189,3 +192,71 @@ def delete_food(request, pk=None):
     food.delete()
     messages.success(request, 'Food item deleted successfully!')
     return redirect('fooditems_by_category', food.category.id)
+
+
+def opening_hours(request):
+    vendor = get_vendor(request)
+    opening_hours = OpeningHour.objects.filter(vendor=vendor).order_by('day', 'from_hour')
+    form = OpeningHourForm()
+    context = {
+        'opening_hours': opening_hours,
+        'form': form,
+    }
+    return render(request, 'vendor/opening_hours.html', context)
+
+
+def add_opening_hours(request):
+    # handle the data and save to db
+    if request.user.is_authenticated:
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest' and request.method == 'POST':
+            day = request.POST.get('day')
+            from_hour = request.POST.get('from_hour')
+            to_hour = request.POST.get('to_hour')
+            is_closed = request.POST.get('is_closed')
+            print(day, from_hour, to_hour, is_closed)
+
+            try:
+                hour = OpeningHour.objects.create(
+                    vendor=get_vendor(request),
+                    day=day,
+                    from_hour=from_hour,
+                    to_hour=to_hour,
+                    is_closed=is_closed,
+                )
+                if hour:
+                    if hour.is_closed:
+                        response = {
+                            'status': 'success',
+                            'id': hour.id,
+                            'day': hour.get_day_display(),
+                            'is_closed': 'closed',
+                        }
+                    else:
+                        response = {
+                            'status': 'success',
+                            'id': hour.id,
+                            'day': hour.get_day_display(),
+                            'from_hour': hour.from_hour,
+                            'to_hour': hour.to_hour,
+                        }
+                    return JsonResponse(response)
+            except IntegrityError:
+                response = {
+                    'status': 'failed',
+                    'message': f"{from_hour}, {to_hour} already exists for this day!",
+                }
+                return JsonResponse(response)
+
+        return HttpResponse('invalid request', status=400)
+    return HttpResponse('authentication required', status=401)
+
+
+def delete_opening_hour(request, pk=None):
+    if request.user.is_authenticated:
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            hour = get_object_or_404(OpeningHour, pk=pk)
+            hour.delete()
+            return JsonResponse({'status': 'success', 'id': pk})
+
+    return HttpResponse('invalid request', status=400)
+

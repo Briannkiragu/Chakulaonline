@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Account Update</title>
+  </head>
+  <body>
+    <p>Hi {{ user.get_full_name|default:user.username }},</p>
+
+    <p>We reviewed your vendor application and, unfortunately, it was not approved at this time.</p>
+
+    <p>If you believe this is a mistake, please contact support or try again later.</p>
+
+    <p>Regards,<br/>The Team</p>
+  </body>
+</html>

@@ -46,7 +46,7 @@
                                             <div class="field-holder">
 
                                                 <label for="">Category *</label>
-                                                {{form.category }}
+                                                {{form.category_name }}
                                             </div>
                                          </div>
 
@@ -96,13 +96,13 @@
                                             </div>
                                         </div>
                                         
-{{% for field in form %}}
-{{% if field.errors %}}
-{{% for error in field.errors %}}
+{% for field in form %}
+{% if field.errors %}
+{% for error in field.errors %}
 <li style="color: red;">{{ error }}</li>
-{{% endfor %}}
-{{% endif %}}
-{{% endfor %}}
+{% endfor %}
+{% endif %}
+{% endfor %}
 
 
 

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Account Approved</title>
+  </head>
+  <body>
+    <p>Hi {{ user.get_full_name|default:user.username }},</p>
+
+    <p>Congratulations — your vendor account has been approved.</p>
+
+    <p>You can sign in here: <a href="/accounts/login/">Log in</a></p>
+
+    <p>Thanks for joining us,<br/>The Team</p>
+  </body>
+</html>

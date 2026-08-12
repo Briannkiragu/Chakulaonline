@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 from decouple import config
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -87,18 +88,18 @@ WSGI_APPLICATION = "chakulaonline_main.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+DATABASE_ENGINE = config('DATABASE_ENGINE', default='django.db.backends.postgresql')
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
+        "ENGINE": DATABASE_ENGINE,
         "NAME":  config('DATABASE_NAME'),
         "USER": config('DATABASE_USER'),
         "PASSWORD": config('DATABASE_PASSWORD'),
         "HOST": config('DATABASE_HOST'),
-        
     }
 }
 
-AUTH_USER_MODEL= 'accounts.User'
+AUTH_USER_MODEL = 'accounts.User'
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
@@ -164,4 +165,18 @@ EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'chakulaonline <blu33ballz@gmail.com>'   
 
 
-GOOGLE_API_KEY = '#APIKEY '
+GOOGLE_API_KEY = config('GOOGLE_API_KEY', default='')
+
+# Set environment variables safely: provide the API key and credentials path if available.
+os.environ['GOOGLE_API_KEY'] = GOOGLE_API_KEY
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.path.join(
+    BASE_DIR,
+    'env',
+    'Lib',
+    'site-packages',
+    'googlemaps',
+    'data',
+    'api_key.json',
+)
+# GDAL library path (correct filename and use Windows-style virtualenv layout)
+GDAL_LIBRARY_PATH = os.path.join(BASE_DIR, 'env', 'Lib', 'site-packages', 'osgeo', 'gdal.dll')

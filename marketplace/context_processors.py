@@ -3,19 +3,8 @@ from menu.models import Item
 
 
 def get_cart_counter(request):
-    cart_count = 0
-    if request.user.is_authenticated:
-        try:
-            cart_items = Cart.objects.filter(user=request.user)
-            if cart_items:
-                for cart_item in cart_items:
-                    cart_count += cart_item.quantity
-            else:
-                cart_count = 0
-
-        except:
-            cart_count = 0
-    return dict(cart_count=cart_count)
+    # keep for template context processor compatibility
+    return dict(cart_count=_get_cart_count_value(request))
 
 
 def get_cart_amounts(request):
@@ -37,3 +26,20 @@ def get_cart_amounts(request):
         except:
             pass
     return dict(subtotal=subtotal, tax=tax_data, grand_total=grand_total, tax_dict=tax_dict)
+
+
+def _get_cart_count_value(request):
+    """Return integer cart count for a given request.
+
+    This helper is used by views that expect an integer and by the
+    context processor which needs to return a dict.
+    """
+    cart_count = 0
+    if request.user.is_authenticated:
+        try:
+            cart_items = Cart.objects.filter(user=request.user)
+            for cart_item in cart_items:
+                cart_count += cart_item.quantity
+        except:
+            cart_count = 0
+    return cart_count
