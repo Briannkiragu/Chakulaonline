@@ -112,7 +112,7 @@ $(document).ready(function(){
                     // subtotal tax and grandtotal
                     applyCartAmounts(
                         response.cart_amount['subtotal'],
-                        response.cart_amount['tax'],
+                        response.cart_amount['tax_dict '],
                         response.cart_amount['grand_total']
                     )
 
@@ -159,7 +159,7 @@ $(document).ready(function(){
 
                     applyCartAmounts(
                         response.cart_amount['subtotal'],
-                        response.cart_amount['tax'],
+                        response.cart_amount['tax_dict'],
                         response.cart_amount['grand_total']
                     )   
                 if(window.location.pathname == '/cart/'){
@@ -193,8 +193,10 @@ $(document).ready(function(){
 
                     applyCartAmounts(
                         response.cart_amount['subtotal'],
-                        response.cart_amount['tax'],
+                        response.cart_amount['tax_dict'],
                         response.cart_amount['grand_total']
+
+
                     )
 
 
@@ -224,8 +226,20 @@ $(document).ready(function(){
    function applyCartAmounts(subtotal, tax, grand_total){
     if(window.location.pathname == '/cart/'){
         $('#subtotal').html(subtotal);
-        $('#tax').html(tax);
         $('#grand_total').html(grand_total);
+
+        console.log(tax_dict)
+        for(key1 in tax_dict){
+            console.log(tax_dict[key1])
+            for(key2 in tax_dict[key1]){
+                
+                $('#tax-'+key1).html(tax_dict[key1][key2])
+     }
+        }
+            
+            
+
+
     }
     }
 
@@ -267,10 +281,10 @@ if(eval(condition)){
           success: function(response)
                 if(response.status == 'success'){
                     if(response.is_closed == 'çlosed'){
-                      html = '<tr id ="hour-'+response.day+'"><td><b>'+response.day+'</b></td><td>Closed</td><td><a href="#">Remove</a></td></tr>'
+                      html = '<tr id ="hour-'+response.day+'"><td><b>'+response.day+'</b></td><td>Closed</td><td><a href="#" class="remove_hour" data-url="/vendor/opening-hours/remove/'+response.id+'/">Remove</a></td></tr>'
                         
                     }else{
-                      html = '<tr id ="hour-'+response.day+'"><td><b>'+response.day+'</b></td><td> '+response.from_hour+' - '+response.to_hour+'</td><td><a href="#">Remove</a></td></tr>'
+                      html = '<tr id ="hour-'+response.day+'"><td><b>'+response.day+'</b></td><td> '+response.from_hour+' - '+response.to_hour+'</td><td><a href="#" class="remove_hour" data-url="/vendor/opening-hours/remove/'+response.id+'/">Remove</a></td></tr>'
                          
                     }
                     $("opening_hours").append(html)
@@ -291,8 +305,8 @@ if(eval(condition)){
 
 
  // DELETE OPENING HOURS
-$('delete_hour').on('click', function(e)){
-    e.preventDefault();
+$(document).on('click', '.delete_hour', function(e){
+        e.preventDefault();
         url = $(this).attr('data-url');
 
         $ajax{(
@@ -302,18 +316,13 @@ $('delete_hour').on('click', function(e)){
                 if(response.status == 'success'){
                     document.getElementById('hour-''+response.id').remove
                 }
-
             }
 
 
-
-
-
-        }
 })
-
 
 })
 
 // document ready close
 
+});

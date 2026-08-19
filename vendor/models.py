@@ -1,7 +1,7 @@
 from django.db import models
 from accounts.models import User, UserProfile
 from accounts.utils import send_notification 
-from datetime import time
+from datetime import time, date, datetime
 
 # Create your models here.
 class Vendor(models.Model):
@@ -16,6 +16,29 @@ class Vendor(models.Model):
     
     def __str__(self):
         return self.vendor_name
+
+
+    def is_open(self):
+        #check current day opening hours
+        today_date = date.today()
+        today = today_date.isoweekday()
+
+        current_opening_hours = OpeningHour.objects.filter(vendor=self, day=today)
+        now = datetime.now()
+        current_time = now.strftime("%H:%M:%S") 
+
+        is_open = None
+        for hour in current_opening_hours:
+            if not hour.is_closed:
+                start = str(datetime.strptime(hour.from_hour, "%I:%M:%p").time())
+                end = str(datetime.strptime(hour.from_hour, "%I:%M:%p").time())
+                if current_time > start and current_time < end:
+                    is_open = True
+                    break
+            
+            else:
+                is_open = False
+        return is_open
 
     def save(self, *args, **kwargs):
         origin = None
