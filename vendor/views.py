@@ -212,7 +212,7 @@ def add_opening_hours(request):
             day = request.POST.get('day')
             from_hour = request.POST.get('from_hour')
             to_hour = request.POST.get('to_hour')
-            is_closed = request.POST.get('is_closed')
+            is_closed = request.POST.get('is_closed', '').lower() == 'true'
             print(day, from_hour, to_hour, is_closed)
 
             try:

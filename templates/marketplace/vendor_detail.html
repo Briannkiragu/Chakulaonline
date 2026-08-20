@@ -33,7 +33,7 @@
 											<p>{{ vendor.userProfile.address }}</p>
 											{% endif %}
 										</div>
-                                    {% opening_hours %}
+									{% if opening_hours %}
 									<div class="delivery-timing reviews-sortby">
 
 										
@@ -49,7 +49,7 @@
 												
 												</a>
 												<ul class="delivery-dropdown">
-													{% for hour_in_opening_hours %}
+															{% for hour in opening_hours %}
 													<li><a href="#"><span class="opend-day">{{ hour }}</span> <span class="opend-time"><small>:</small>{% if hour.is_closed %}Closed{% else %}{{ hour.from_hour }}{% endif %} - {{ hour.to_hour }}</span></a></li>
 												</li>
 												{% endfor %}
@@ -124,7 +124,7 @@
 
 												{% for items in cart_items %}
 
-											    <span id="qty-{{ items.food_item.food_title }}" class="item_qty d-none" data-qty="{{ items.quantity }}">{{ items.quantity }}</span>	
+													<span id="qty-{{ items.item.id }}" class="item_qty d-none" data-qty="{{ items.quantity }}">{{ items.quantity }}</span>	
 
 												{% endfor %}
 											</div>

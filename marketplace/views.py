@@ -30,7 +30,7 @@ def vendor_detail(request, vendor_slug):
 
     ))
 
-    opening_hours = OpeningHour.object.filter(vendor=vendor).order_by('day', 'from_hour')
+    opening_hours = OpeningHour.objects.filter(vendor=vendor).order_by('day', 'from_hour')
 #check current day opening hours
     today_date = date.today()
     today = today_date.isoweekday()
@@ -47,6 +47,7 @@ def vendor_detail(request, vendor_slug):
         'vendor': vendor,
         'categories': categories,
         'cart_count': cart_count,
+        'cart_items': cart_items if request.user.is_authenticated else Cart.objects.none(),
         'opening_hours': opening_hours,
         'current_opening_hours' : current_opening_hours,
     }
@@ -54,7 +55,7 @@ def vendor_detail(request, vendor_slug):
 
 def add_to_cart(request, item_id):
     if request.user.is_authenticated:
-        if request.is_ajax():
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             # check if fooditem exists
             try:
                 item = Item.objects.get(id=item_id)
@@ -82,7 +83,7 @@ def add_to_cart(request, item_id):
 def decrease_cart(request, item_id):
     # Logic to decrease the cart item quantity
     if request.user.is_authenticated:
-        if request.is_ajax():
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             try:
                 item = Item.objects.get(id=item_id)
                 try:
@@ -119,7 +120,7 @@ def cart (request):
 
 def delete_cart(request, item_id):
     if request.user.is_authenticated:
-        if request.is_ajax():
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             try:
                 item = Item.objects.get(id=item_id)
                 try:

@@ -24,7 +24,7 @@ urlpatterns = [
 
     #opening hours crud
     path('opening-hours', views.opening_hours, name='opening_hour'),
-    path('opening-hours/add/<int:pk>/', views.add_opening_hours, name='add_opening_hours'),
+    path('opening-hours/add/', views.add_opening_hours, name='add_opening_hours'),
     path('opening-hours/delete/<int:pk>/', views.delete_opening_hour, name='delete_opening_hour'),
     
 ]
