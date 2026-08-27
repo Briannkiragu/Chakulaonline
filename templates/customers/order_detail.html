@@ -1,12 +1,26 @@
-{% extends 'base.html' %}
+{%extends 'base.html' %}
 {% load static %}
 
-{% block content %}
- {{ order }}
- <div class="container mt-5 mb-5">
+{% block content %} 
+{% include 'includes/alerts.html' %}
+
+		<!-- Main Section Start -->
+         		<div class="main-section">
+         {% include 'customers/cover.html' %}
+			<div class="page-section account-header buyer-logged-in">
+				<div class="container">
+					<div class="row">
+						<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+							<!--load sidebar here-->
+                        {% include 'includes/c_sidebar.html' %}
+						</div>
+						<div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
+							<div class="user-dashboard loader-holder">
+								<div class="user-holder">
+<div class="container">
     <div class="justify-content-center row">
-        <div class="col-md-8">
-            <div class="bg-white p-3">
+        <div class="col-md-12">
+            <div class="bg-white p-1">
                 <img src="{% static 'logo/foodOnlineLogo.png' %}" alt="foodOnline Logo" width="300">
                 <h4 class="mt-2 mb-3">Thanks for your order</h4>
                 <h6>Hello {{ order_name }}, </h6><span>Review your Order Details Below.</span>
@@ -31,10 +45,10 @@
                         <tbody>
                         {% for item in ordered_food %}
                         <tr>
-                        <td><img src="{{ item.fooditem.image.url }}" width="60" alt="Food image"></td>
+                        <td><img src="{{ item.item.image.url }}" width="60" alt="Food image"></td>
 						<td>
                             <p class="mb-o"><b>{{ item.fooditem }}</b></p>
-							<a class="text-muted" href="{% url 'vendor_detail' item.fooditem.vendor.vendor_slug %}">{{ item.fooditem.vendor.vendor_name }}</a>
+                            <a class="text-muted" href="{% url 'vendor_detail' item.fooditem.vendor.vendor_slug}">{{ item.fooditem.vendor.vendor_name }}</a>
                         </td>
 						<td>{{ item.quantity }}</td>
 						<td>${{ item.fooditem.price }}</td>
@@ -101,4 +115,11 @@
         </div>
     </div>
  </div>
-{% endblock %}
+		<!-- Main Section End -->
+
+
+
+
+
+
+{%endblock %}

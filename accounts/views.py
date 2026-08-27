@@ -11,6 +11,7 @@ from django.core.exceptions import PermissionDenied
 from django.utils.http import urlsafe_base64_decode
 from vendor.models import Vendor
 from django.template.defaultfilters import slugify
+from orders.models import Order
 # Create your models here.
 
 
@@ -178,7 +179,15 @@ def myAccount(request):
 @login_required(login_url='login')
 @user_passes_test(check_role_customer)
 def custDashboard(request):
-    return render(request, 'accounts/custDashboard.html')
+    orders = Order.objects.filter(user=request.user, is_ordered=True)
+    recent_orders = orders[:5]
+    context = {
+        'orders': orders,
+        'orders_count': orders.count(),
+        'recent_orders': recent_orders,
+
+    }
+    return render(request, 'accounts/custDashboard.html', context)
 
 @login_required(login_url='login')
 @user_passes_test(check_role_vendor)
