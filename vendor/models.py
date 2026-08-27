@@ -55,7 +55,12 @@ class Vendor(models.Model):
                 # send email to vendor that account is approved
                 mail_subject = 'Congratulations! Your account has been approved.'
                 mail_template = 'accounts/emails/vendor_approved_email.html'
-                context = {'user': self.user, 'is_approved': self.is_approved}
+                context = {
+                    'user': self.user,
+                    'is_approved': self.is_approved,
+                    'to_email':self.user.email,
+                }
+                #check if error arises during sending email notifications
                 send_notification(mail_subject, mail_template, context)
             else:
                 # send email to vendor that account is rejected

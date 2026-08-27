@@ -24,7 +24,9 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 	<script src="{% static 'js/modernizr.js' %}"></script>
 	<script src="{% static 'js/bootstrap.js' %}"></script> 
-
+	<!--paypal javascript sdk-->
+    <script src="https://www.paypal.com/sdk/js?client-id={{ PAYPAL_CLIENT_ID }}&merchant-id={SELLER_PAYER_ID}&components=buttons" data-partner-attribution-id="{PARTNER_BN_CODE}"></script>
+   
 		<link rel="stylesheet" href="{% static 'css/custom.css' %}">
         {% if '/profile/' in request.path %}
 		<!--GOOGLE AUTOCOMPLETE-->

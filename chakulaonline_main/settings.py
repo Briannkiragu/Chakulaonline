@@ -48,6 +48,7 @@ INSTALLED_APPS = [
 'menu',
 'marketplace',
 'customers',
+'orders',
 
 ]
 
@@ -77,6 +78,8 @@ TEMPLATES = [
                 "marketplace.context_processors.get_cart_counter",
                 "marketplace.context_processors.get_cart_amounts",
                 "accounts.context_processors.get_user_profile",
+                "accounts.context_processors.get_paypal_client_id",
+
                 # "accounts.context_processors.get_google_api",  
                 
             ],
@@ -182,3 +185,8 @@ os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.path.join(
 )
 # GDAL library path (correct filename and use Windows-style virtualenv layout)
 GDAL_LIBRARY_PATH = os.path.join(BASE_DIR, 'env', 'Lib', 'site-packages', 'osgeo', 'gdal.dll')
+
+#payPal
+PAYPAL_CLIENT_ID = config('PAYPAL_CLIENT_ID')
+
+SECURE_CROSS_ORIGIN_OPENER_POLICY = 'same-origin-allow-popups'
