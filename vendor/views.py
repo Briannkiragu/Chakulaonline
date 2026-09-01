@@ -9,6 +9,7 @@ from accounts.forms import UserProfileForm
 from accounts.models import UserProfile
 from .models import Vendor, OpeningHour
 from django.contrib import messages
+from orders.models import Order, OrderedFood
 
 from django.contrib.auth.decorators import login_required, user_passes_test
 from accounts.views import check_role_vendor
@@ -260,3 +261,30 @@ def delete_opening_hour(request, pk=None):
 
     return HttpResponse('invalid request', status=400)
 
+def order_detail(request, order_number):
+    try:
+        vendor = get_vendor(request)
+        order = Order.objects.get(order_number=order_number, is_ordered=True)
+        ordered_food = OrderedFood.objects.filter(order=order, fooditem__vendor=vendor)
+        totals = order.get_total_by_vendor(vendor)
+
+        context = {
+            'order': order,
+            'ordered_food': ordered_food,
+            'subtotal': totals['subtotal'],
+            'tax_data': totals['tax_dict'],
+            'grand_total': totals['grand_total'],
+        }
+    except Exception:
+        return redirect('vendor')
+
+    return render(request, 'vendor/order_detail.html', context)
+
+
+def my_orders(request):
+    vendor = get_vendor(request)
+    orders = Order.objects.filter(vendors=vendor, is_ordered=True).order_by('-created_at')
+    context = {
+        'orders': orders,
+    }
+    return render(request, 'vendor/my_orders.html', context)    

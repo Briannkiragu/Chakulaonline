@@ -8,8 +8,10 @@ import simplejson as json
 from.utils import generate_order_number
 from.models import Payment
 from.models import OrderedFood
+from menu.models import Item
 from accounts.utils import send_notification
 from django.contrib.auth.decorators import login_required
+from marketplace.models import Tax
 # Create your views here.
 
 
@@ -19,6 +21,41 @@ def place_order(request):
     cart_count = cart_items.count()
     if cart_count <= 0:
         return redirect('marketplace')
+
+    vendors_ids = []
+    for i in cart_items:
+        if i.item.vendor.id not in vendors_ids:
+            vendors_ids.append(i.item.vendor.id)
+
+    get_tax = Tax.objects.filter(is_active=True)
+    subtotal = 0
+    k = {}
+    total_data = {}
+
+    for i in cart_items:
+        fooditem = Item.objects.get(pk=i.item.id, vendor_id__in=vendors_ids)
+        v_id = fooditem.vendor.id
+        if v_id in k:
+            subtotal = k[v_id]
+            subtotal += (fooditem.price * i.quantity)
+            k[v_id] = subtotal
+        else:
+             subtotal = (fooditem.price * i.quantity)
+             k[v_id] = subtotal
+
+        #calculate the tax data for each vendor
+        for i in get_tax:
+            tax_dict = {}
+            tax_type = i.tax_type
+            tax_percentage = i.tax_percentage
+            tax_amount = round((tax_percentage * subtotal)/100, 2)
+            tax_dict.update({tax_type: str(tax_amount)})
+
+            #construct total data for each vendor in a dictionary
+        total_data.update({fooditem.vendor.id: {str(subtotal): tax_dict}})
+
+    print(total_data)
+    
     subtotal = get_cart_amounts(request)['subtotal']
     total_tax = get_cart_amounts(request)['tax']   
     grand_total = get_cart_amounts(request)['grand_total']   
@@ -43,6 +80,7 @@ def place_order(request):
             order.payment_method = request.POST['payment_method']
             order.save()#order pk is generated after the form is saved
             order.order_number = generate_order_number(order.id)
+            order.vendors.add(*vendors_ids)
             order.save()
             context = {
                 'order': order,
@@ -79,21 +117,22 @@ def payments(request):
         order.payment = payment
         order.is_ordered = True
         order.save()
-     
 
+        cart_items = Cart.objects.filter(user=request.user)
+        for item in cart_items:
+            order.vendors.add(item.item.vendor)
 
-    #move cart items to ordered food model
-    cart_items = Cart.objects.filter(user=request.user)
-    for item in cart_items:
-        ordered_food = OrderedFood()
-        ordered_food.order = order
-        ordered_food.payment = payment
-        ordered_food.user = request.user
-        ordered_food.fooditem = item.item
-        ordered_food.quantity = item.quantity
-        ordered_food.price = item.item.price
-        ordered_food.amount = item.item.price * item.quantity #total amount
-        ordered_food.save()
+        #move cart items to ordered food model
+        for item in cart_items:
+            ordered_food = OrderedFood()
+            ordered_food.order = order
+            ordered_food.payment = payment
+            ordered_food.user = request.user
+            ordered_food.fooditem = item.item
+            ordered_food.quantity = item.quantity
+            ordered_food.price = item.item.price
+            ordered_food.amount = item.item.price * item.quantity #total amount
+            ordered_food.save()
 
 #send order confirmation email to the customer
     mail_subject = 'Thankyou for registering with us'

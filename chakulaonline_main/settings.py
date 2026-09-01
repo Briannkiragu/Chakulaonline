@@ -60,6 +60,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "orders.request_object.RequestObjectMiddleware",  # Add the custom middleware here
 ]
 
 ROOT_URLCONF = "chakulaonline_main.urls"

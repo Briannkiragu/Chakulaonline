@@ -6,13 +6,13 @@
 
 		<!-- Main Section Start -->
 		<div class="main-section">
-         {% include 'customers/cover.html' %}
+         {% include 'includes/cover.html' %}
 			<div class="page-section account-header buyer-logged-in">
 				<div class="container">
 					<div class="row">
 						<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
 							<!--load sidebar here-->
-                        {% include 'includes/c_sidebar.html' %}
+                        {% include 'includes/v_sidebar.html' %}
 						</div>
 						<div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
 							<div class="user-dashboard loader-holder">
@@ -44,13 +44,13 @@
 													<tbody>
 														{% for order in orders %}
 														<tr>
-															<td><b><a href="{% url 'order_detail' order.order_number %}" class="text-dark">{{ order.order_number }}</a></b></td>
+															<td><b><a href="{% url 'vendor_order_detail' order.order_number %}" class="text-dark">{{ order.order_number }}</a></b></td>
                                                             <td>ksh{{ order.name }}</td>
-                                                            <td>ksh{{ order.total }}</td>
+                                                            <td>ksh{{ order.get_total_by_vendor.grand_totals }}</td>
 															<td>{{ order.status }}</td>
 															<td>{{ order.created_at|date:"M d, Y" }}</td>
 															<td>{{ order.created_at|date:"H:i" }}</td>
-															<td><a href="{% url 'order_detail' order.order_number %}" class="btn btn-danger">Details</a></td>
+															<td><a href="{% url 'vendor_order_detail' order.order_number %}" class="btn btn-danger">Details</a></td>
 														</tr>
 														{% endfor %}
 													</tbody>

@@ -1,7 +1,9 @@
+import json
+
 from django.db import models
 from accounts.models import User
 from menu.models import Item
-
+from vendor.models import Vendor
 
 class Payment(models.Model):
     PAYMENT_METHOD = (
@@ -28,6 +30,7 @@ class Order(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     payment = models.ForeignKey(Payment, on_delete=models.SET_NULL, blank=True, null=True)
+    vendors = models.ManyToManyField(Vendor, blank=True)
     order_number = models.CharField(max_length=20)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
@@ -39,7 +42,8 @@ class Order(models.Model):
     city = models.CharField(max_length=50)
     pin_code = models.CharField(max_length=10)
     total = models.FloatField()
-    tax_data = models.JSONField(blank=True, help_text = "Data format: {'tax_type':{'tax_percentage':'tax_amount'}}")
+    tax_data = models.JSONField(blank=True, help_text = "Data format: {'tax_type':{'tax_percentage':'tax_amount'}}", null=True)
+    total_data = models.JSONField(blank=True, null=True)
     total_tax = models.FloatField()
     payment_method = models.CharField(max_length=25)
     status = models.CharField(max_length=15, choices=STATUS, default='New')
@@ -52,6 +56,56 @@ class Order(models.Model):
     def name(self):
         return f'{self.first_name} {self.last_name}'
 
+    def order_placed_to(self):
+        return ", ".join([str(i) for i in self.vendors.all()])   
+
+    def get_total_by_vendor(self, vendor):
+        subtotal = 0.0
+        tax_total = 0.0
+        tax_dict = {}
+
+        if self.total_data:
+            try:
+                total_data = self.total_data
+                if isinstance(total_data, str):
+                    total_data = json.loads(total_data)
+
+                data = total_data.get(str(vendor.id))
+                if data is None:
+                    data = total_data.get(vendor.id)
+
+                if data:
+                    for key, val in data.items():
+                        try:
+                            subtotal += float(key)
+                        except (TypeError, ValueError):
+                            pass
+
+                        if isinstance(val, str):
+                            try:
+                                val = json.loads(val.replace("'", '"'))
+                            except (TypeError, ValueError):
+                                pass
+
+                        if isinstance(val, dict):
+                            tax_dict.update(val)
+                            for tax_value in val.values():
+                                try:
+                                    tax_total += float(tax_value)
+                                except (TypeError, ValueError):
+                                    pass
+            except (TypeError, ValueError, json.JSONDecodeError):
+                subtotal = 0.0
+                tax_total = 0.0
+                tax_dict = {}
+
+        grand_total = subtotal + tax_total
+        return {
+            'subtotal': subtotal,
+            'tax_dict': tax_dict,
+            'tax_total': tax_total,
+            'grand_total': grand_total,
+        }
     def __str__(self):
         return self.order_number
 

@@ -19,7 +19,7 @@ def get_cart_amounts(request):
         for current_tax in Tax.objects.filter(is_active=True):
             tax_amount = round((current_tax.tax_percentage * subtotal) / 100, 2)
             tax_dict[current_tax.tax_type] = {
-                str(current_tax.tax_percentage): tax_amount,
+                str(current_tax.tax_percentage): str(tax_amount),
             }
             tax += tax_amount
         grand_total = subtotal + tax

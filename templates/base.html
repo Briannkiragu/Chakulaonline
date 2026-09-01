@@ -27,6 +27,16 @@
 	<!--paypal javascript sdk-->
     <script src="https://www.paypal.com/sdk/js?client-id={{ PAYPAL_CLIENT_ID }}&merchant-id={SELLER_PAYER_ID}&components=buttons" data-partner-attribution-id="{PARTNER_BN_CODE}"></script>
    
+	<!-- include datables plugin scripts and css-->
+	 <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+	<link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
+	<script>
+		$(document).ready(function() {
+			$('#myOrdersTable').DataTable();
+		});
+
+	</script>
+	 
 		<link rel="stylesheet" href="{% static 'css/custom.css' %}">
         {% if '/profile/' in request.path %}
 		<!--GOOGLE AUTOCOMPLETE-->
